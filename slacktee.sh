@@ -46,6 +46,7 @@ function show_help(){
     echo "    -f, --file                        Post input values as a file."
     echo "    -l, --link                        Add a URL link to the message."
     echo "    -c, --channel channel_name        Post input values to this channel."
+    echo "    -C, --Color  Color                Post attachment color."
     echo "    -u, --username user_name          This username is used for posting."
     echo "    -i, --icon emoji_name             This icon is used for posting."
     echo "    -t, --title title_string          This title is added to posts."
@@ -58,8 +59,9 @@ function show_help(){
 function send_message(){
     message="$1"
     if [[ $message != "" ]]; then
-        escapedText=$(echo "$textWrapper$message$textWrapper" | sed 's/"/\\"/g' | sed "s/'/\\'/g" )
-        json="{\"channel\": \"#$channel\", \"username\": \"$username\", \"text\": \"$escapedText\", \"icon_emoji\": \":$icon:\" $parseMode}"
+
+        escapedText=$(echo "$message" | sed 's/"/\\"/g' | sed "s/'/\\'/g" )
+        json="{\"title\": \"$title\", \"channel\": \"#$channel\", \"color\": \"$color\", \"username\": \"$username\", \"fields\":[{\"value\": \"$escapedText\"}], \"icon_emoji\": \":$icon:\" $parseMode}"
         post_result=`curl -X POST --data-urlencode "payload=$json" $webhook_url 2>/dev/null`
     fi
 }
@@ -152,6 +154,10 @@ while [[ $# > 0 ]]; do
             ;;
     -c|--channel)
             channel="$1"
+            shift
+            ;;
+    -C|--color)
+            color="$1"
             shift
             ;;
     -u|--username)
